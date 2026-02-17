@@ -12,22 +12,23 @@ namespace Pagination.Infrastructure.Repository
     {
         private readonly UserDbContext _userDbContext;
         private readonly int _countStrategy;
-        private readonly bool _isTrackingEntity;
-        private readonly bool _isIncludeChildTable;
+        private readonly bool _isUseNoTracking;
+        private readonly bool _isUseSplitQuery;
+
 
         public CursorRepository(UserDbContext userDbContext, IOptions<AppSettings> appSettings)
         {
             _userDbContext = userDbContext;
             _countStrategy = appSettings.Value.UserCountStrategy;
-            _isIncludeChildTable = appSettings.Value.IsIncludeChildTable;
-            _isTrackingEntity = appSettings.Value.IsTrackingEntity;
+            _isUseNoTracking = appSettings.Value.IsUseNoTracking;
+            _isUseSplitQuery = appSettings.Value.IsUseSplitQuery;
         }
 
         public async Task<(List<User>, int)> GetAsync(CursorPaginationRequest request)
         {
             IQueryable<User> queryable = _userDbContext.Users;
 
-            if (!_isTrackingEntity)
+            if (!_isUseNoTracking)
                 queryable = queryable.AsNoTracking();
 
             int totalCount = 0;
@@ -51,20 +52,22 @@ namespace Pagination.Infrastructure.Repository
                 queryable = queryable.Where(u => u.Id > request.Cursor).OrderBy(u => u.Id);
             }
 
-            if (_isIncludeChildTable)
+            if (_isUseSplitQuery)
             {
-                queryable = queryable
-                    .Include(u => u.Roles)
-                    .Include(u => u.Address)
-                    .Include(u => u.BankAccount)
-                        .ThenInclude(ba => ba.Transactions)
-                    .Include(u => u.CreditCards)
-                        .ThenInclude(cc => cc.Statements)
-                    .Include(u => u.Loans)
-                        .ThenInclude(l => l.Repayments)
-                    .Include(u => u.SupportTickets)
-                        .ThenInclude(st => st.Comments);
+                queryable = queryable.AsSplitQuery();
             }
+
+            queryable = queryable
+                .Include(u => u.Roles)
+                .Include(u => u.Address)
+                .Include(u => u.BankAccount)
+                    .ThenInclude(ba => ba.Transactions)
+                .Include(u => u.CreditCards)
+                    .ThenInclude(cc => cc.Statements)
+                .Include(u => u.Loans)
+                    .ThenInclude(l => l.Repayments)
+                .Include(u => u.SupportTickets)
+                    .ThenInclude(st => st.Comments);
 
             return (await queryable.Take(request.PageSize + 1).ToListAsync(), totalCount);
         }
