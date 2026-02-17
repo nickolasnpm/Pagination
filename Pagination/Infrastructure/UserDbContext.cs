@@ -29,7 +29,7 @@ namespace Pagination.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.HasDefaultSchema("Pagination");
+            modelBuilder.HasDefaultSchema("Performance");
         }
     }
 }
