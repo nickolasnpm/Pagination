@@ -13,14 +13,14 @@ namespace Pagination.Infrastructure.Repository
     public class OffsetRepository : IOffsetRepository
     {
         private readonly UserDbContext _userDbContext;
-        private readonly int _countStrategy;
+        private readonly bool _isUseCache;
         private readonly bool _isUseNoTracking;
         private readonly bool _isUseSplitQuery;
 
         public OffsetRepository(UserDbContext userDbContext, IOptions<AppSettings> appSettings)
         {
             _userDbContext = userDbContext;
-            _countStrategy = appSettings.Value.UserCountStrategy;
+            _isUseCache = appSettings.Value.IsUseCache;
             _isUseNoTracking = appSettings.Value.IsUseNoTracking;
             _isUseSplitQuery = appSettings.Value.IsUseSplitQuery;
         }
@@ -29,12 +29,12 @@ namespace Pagination.Infrastructure.Repository
         {
             IQueryable<User> queryable = _userDbContext.Users;
 
-            if (!_isUseNoTracking)
+            if (_isUseNoTracking)
                 queryable = queryable.AsNoTracking();
 
             var totalCount = 0;
 
-            if ((int)UserCountStrategy.Cache == _countStrategy)
+            if (_isUseCache)
             {
                 totalCount = await AsyncCache<int>.GetOrUpdateAsync(
                     CacheKeyAndTimes.UserCount.ToString(), TimeSpan.FromMinutes((int)CacheKeyAndTimes.UserCount), () => queryable.CountAsync());

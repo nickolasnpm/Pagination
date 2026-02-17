@@ -6,12 +6,6 @@
         Cursor = 2
     }
 
-    public enum UserCountStrategy
-    {
-        None = 1,   
-        Cache = 2
-    }
-
     public enum CacheKeyAndTimes
     {
         UserCount = 60
