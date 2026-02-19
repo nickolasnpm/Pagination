@@ -1,16 +1,20 @@
-﻿namespace Pagination.Application.DTO
+﻿using Pagination.Application.Common;
+
+namespace Pagination.Application.DTO
 {
     public class DefaultPaginationRequest
     {
-        public int PaginationType { get; set; }
-        public OffsetPaginationRequest? offsetPagination { get; set; }
-        public CursorPaginationRequest? cursorPagination { get; set; }
+        public PaginationType PaginationType { get; set; }
+        
+        public OffsetPaginationRequest? OffsetPagination { get; set; }
+        public CursorPaginationRequest? CursorPagination { get; set; }
     }
 
     public class OffsetPaginationRequest
     {
         public int Page { get; set; } = 1;
         public int PageSize { get; set; } = 50;
+
     }
 
     public class CursorPaginationRequest

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Pagination.Application.DTO;
+using Pagination.Application.Configuration;
 using Pagination.Application.Interface.Repository;
 using Pagination.Infrastructure;
 using Pagination.Infrastructure.Repository;
@@ -31,8 +31,8 @@ builder.Services.AddDbContextPool<UserDbContext>(options =>
     .EnableSensitiveDataLogging(builder.Environment.IsDevelopment())
 );
 
-builder.Services.Configure<AppSettings>(
-    builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<CacheSettings>(builder.Configuration.GetSection("CacheSettings"));
 
 builder.Services.AddScoped<IOffsetRepository, OffsetRepository>();
 builder.Services.AddScoped<ICursorRepository, CursorRepository>();
