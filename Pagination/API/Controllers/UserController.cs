@@ -7,7 +7,7 @@ using Pagination.Application.DTO;
 using Pagination.Application.Common;
 using Pagination.Application.Interface.Repository;
 using Pagination.Application.Queries;
-using Pagination.Domain.Model;
+using Pagination.Domain.Entity;
 
 namespace Pagination.API.Controllers
 {

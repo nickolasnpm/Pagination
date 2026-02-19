@@ -26,7 +26,7 @@ namespace Pagination.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Pagination.Domain.Model.Address", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.Address", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -86,7 +86,7 @@ namespace Pagination.Migrations
                     b.ToTable("Addresses", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.BankAccount", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.BankAccount", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,7 +137,7 @@ namespace Pagination.Migrations
                     b.ToTable("BankAccounts", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.BankTransaction", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.BankTransaction", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -199,7 +199,7 @@ namespace Pagination.Migrations
                     b.ToTable("BankTransactions", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.CreditCard", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.CreditCard", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -269,7 +269,7 @@ namespace Pagination.Migrations
                     b.ToTable("CreditCards", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.CreditCardStatement", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.CreditCardStatement", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -329,7 +329,7 @@ namespace Pagination.Migrations
                     b.ToTable("CreditCardStatements", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.Loan", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.Loan", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -401,7 +401,7 @@ namespace Pagination.Migrations
                     b.ToTable("Loans", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.LoanRepayment", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.LoanRepayment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -449,7 +449,7 @@ namespace Pagination.Migrations
                     b.ToTable("LoanRepayments", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.Role", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.Role", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -486,7 +486,7 @@ namespace Pagination.Migrations
                     b.ToTable("Roles", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.SupportTicket", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.SupportTicket", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -536,7 +536,7 @@ namespace Pagination.Migrations
                     b.ToTable("SupportTickets", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.SupportTicketComment", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.SupportTicketComment", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -580,7 +580,7 @@ namespace Pagination.Migrations
                     b.ToTable("SupportTicketComments", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.User", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -670,31 +670,31 @@ namespace Pagination.Migrations
                     b.ToTable("RoleUser", "Pagination");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.Address", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.Address", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.User", "User")
+                    b.HasOne("Pagination.Domain.Entity.User", "User")
                         .WithOne("Address")
-                        .HasForeignKey("Pagination.Domain.Model.Address", "UserId")
+                        .HasForeignKey("Pagination.Domain.Entity.Address", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.BankAccount", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.BankAccount", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.User", "User")
+                    b.HasOne("Pagination.Domain.Entity.User", "User")
                         .WithOne("BankAccount")
-                        .HasForeignKey("Pagination.Domain.Model.BankAccount", "UserId")
+                        .HasForeignKey("Pagination.Domain.Entity.BankAccount", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.BankTransaction", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.BankTransaction", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.BankAccount", "BankAccount")
+                    b.HasOne("Pagination.Domain.Entity.BankAccount", "BankAccount")
                         .WithMany("Transactions")
                         .HasForeignKey("BankAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -703,9 +703,9 @@ namespace Pagination.Migrations
                     b.Navigation("BankAccount");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.CreditCard", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.CreditCard", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.User", "User")
+                    b.HasOne("Pagination.Domain.Entity.User", "User")
                         .WithMany("CreditCards")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -714,9 +714,9 @@ namespace Pagination.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.CreditCardStatement", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.CreditCardStatement", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.CreditCard", "CreditCard")
+                    b.HasOne("Pagination.Domain.Entity.CreditCard", "CreditCard")
                         .WithMany("Statements")
                         .HasForeignKey("CreditCardId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -725,9 +725,9 @@ namespace Pagination.Migrations
                     b.Navigation("CreditCard");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.Loan", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.Loan", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.User", "User")
+                    b.HasOne("Pagination.Domain.Entity.User", "User")
                         .WithMany("Loans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -736,9 +736,9 @@ namespace Pagination.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.LoanRepayment", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.LoanRepayment", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.Loan", "Loan")
+                    b.HasOne("Pagination.Domain.Entity.Loan", "Loan")
                         .WithMany("Repayments")
                         .HasForeignKey("LoanId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -747,9 +747,9 @@ namespace Pagination.Migrations
                     b.Navigation("Loan");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.SupportTicket", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.SupportTicket", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.User", "User")
+                    b.HasOne("Pagination.Domain.Entity.User", "User")
                         .WithMany("SupportTickets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -758,9 +758,9 @@ namespace Pagination.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.SupportTicketComment", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.SupportTicketComment", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.SupportTicket", "Ticket")
+                    b.HasOne("Pagination.Domain.Entity.SupportTicket", "Ticket")
                         .WithMany("Comments")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -771,40 +771,40 @@ namespace Pagination.Migrations
 
             modelBuilder.Entity("RoleUser", b =>
                 {
-                    b.HasOne("Pagination.Domain.Model.Role", null)
+                    b.HasOne("Pagination.Domain.Entity.Role", null)
                         .WithMany()
                         .HasForeignKey("RolesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pagination.Domain.Model.User", null)
+                    b.HasOne("Pagination.Domain.Entity.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.BankAccount", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.BankAccount", b =>
                 {
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.CreditCard", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.CreditCard", b =>
                 {
                     b.Navigation("Statements");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.Loan", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.Loan", b =>
                 {
                     b.Navigation("Repayments");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.SupportTicket", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.SupportTicket", b =>
                 {
                     b.Navigation("Comments");
                 });
 
-            modelBuilder.Entity("Pagination.Domain.Model.User", b =>
+            modelBuilder.Entity("Pagination.Domain.Entity.User", b =>
                 {
                     b.Navigation("Address");
 

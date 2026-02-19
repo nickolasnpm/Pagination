@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pagination.Application.Extensions.Repository;
-using Pagination.Domain.Model;
+using Pagination.Domain.Entity;
 
 namespace Pagination.Application.Queries
 {

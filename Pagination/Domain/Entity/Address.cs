@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Pagination.Domain.Model
+namespace Pagination.Domain.Entity
 {
     public class Address: BaseModel
     {

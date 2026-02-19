@@ -1,6 +1,6 @@
 ﻿using Pagination.Application.DTO;
 using Pagination.Application.Queries;
-using Pagination.Domain.Model;
+using Pagination.Domain.Entity;
 
 namespace Pagination.Application.Interface.Repository
 {

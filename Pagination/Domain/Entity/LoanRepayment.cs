@@ -2,7 +2,7 @@
 using Pagination.Domain;
 using System.Text.Json.Serialization;
 
-namespace Pagination.Domain.Model
+namespace Pagination.Domain.Entity
 {
     public class LoanRepayment: BaseModel
     {

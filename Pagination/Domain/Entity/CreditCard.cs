@@ -3,7 +3,7 @@ using Pagination.Domain;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Pagination.Domain.Model
+namespace Pagination.Domain.Entity
 {
     [Index(nameof(CardNumber), IsUnique = true)]
     public class CreditCard : BaseModel

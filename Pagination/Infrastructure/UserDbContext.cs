@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pagination.Domain;
-using Pagination.Domain.Model;
+using Pagination.Domain.Entity;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 

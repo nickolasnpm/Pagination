@@ -3,7 +3,7 @@ using Pagination.Domain;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Pagination.Domain.Model
+namespace Pagination.Domain.Entity
 {
     [Index(nameof(Username), IsUnique = true)]
     [Index(nameof(Email), IsUnique = true)]

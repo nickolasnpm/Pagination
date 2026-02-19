@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Pagination.Domain.Model
+namespace Pagination.Domain.Entity
 {
     public class BaseModel
     {
