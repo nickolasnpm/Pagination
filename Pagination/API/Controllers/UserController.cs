@@ -6,26 +6,16 @@ using Microsoft.EntityFrameworkCore;
 using Pagination.Application.DTO;
 using Pagination.Application.Common;
 using Pagination.Application.Interface.Repository;
+using Pagination.Application.Queries;
 using Pagination.Domain.Model;
-using Pagination.Infrastructure;
 
 namespace Pagination.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController (IOffsetRepository _offsetRepository, ICursorRepository _cursorRepository, ILogger<UserController> _logger) 
+        : ControllerBase
     {
-        private readonly IOffsetRepository _offsetRepository;
-        private readonly ICursorRepository _cursorRepository;
-        private readonly ILogger<UserController> _logger;
-
-        public UserController(IOffsetRepository offsetRepository, ICursorRepository cursorRepository, ILogger<UserController> logger) 
-        {
-            _offsetRepository = offsetRepository;
-            _cursorRepository = cursorRepository;
-            _logger = logger;
-        }
-
         [HttpGet("getusers")]
         public async Task<IActionResult> DefaultPaginationAsync ([FromQuery] DefaultPaginationRequest request)
         {
@@ -38,11 +28,15 @@ namespace Pagination.API.Controllers
 
                 switch (request.PaginationType)
                 {
-                    case (int)PaginationType.Offset:
-                        return await OffsetPaginationAsync(request.offsetPagination!);
+                    case PaginationType.Cursor:
+                        if (request.CursorPagination is null)
+                            return BadRequest("Cursor pagination request is required.");
+                        return await CursorPaginationAsync(request.CursorPagination);
 
-                    case (int)PaginationType.Cursor:
-                        return await CursorPaginationAsync(request.cursorPagination!);
+                    case PaginationType.Offset:
+                        if (request.OffsetPagination is null)
+                            return BadRequest("Offset pagination request is required.");
+                        return await OffsetPaginationAsync(request.OffsetPagination);
 
                     default:
                         return BadRequest("Invalid pagination type.");
@@ -51,7 +45,7 @@ namespace Pagination.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured. PaginationType: {PaginationType}", request.PaginationType);
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while processing your request.");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while processing your request: {ex.Message}");
             }
 
         }
@@ -63,7 +57,8 @@ namespace Pagination.API.Controllers
                 return BadRequest("Page number must be greater than 0.");
             }
 
-            var (users, totalCount) = await _offsetRepository.GetAsync(request);
+            var (users, totalCount) = await _offsetRepository.GetAsync(request, UserIncludeOptions.All);
+            //var (users, totalCount) = await _offsetRepository.GetAsync(request, new UserIncludeOptions() { Address = true });
 
             int totalPages = (int)Math.Ceiling((double)totalCount / request.PageSize);
 
@@ -72,7 +67,7 @@ namespace Pagination.API.Controllers
 
             return Ok(new OffsetPaginationResponse<User>()
             {
-                Data = users,
+                Data = await users.ToListAsync(),
                 TotalCount = totalCount,
                 TotalPages = totalPages,
                 HasNextPage = hasNextPage,
@@ -87,19 +82,20 @@ namespace Pagination.API.Controllers
                 return BadRequest("Cursor must be a non-negative value.");
             }
 
-            var (users, totalCount) = await _cursorRepository.GetAsync(request);
+            var (users, totalCount) = await _cursorRepository.GetAsync(request, UserIncludeOptions.All);
+            var result = await users.ToListAsync();
 
-            bool hasMore = users.Count > request.PageSize;
+            bool hasMore = result.Count > request.PageSize;
 
             if (hasMore)
-                users.RemoveAt(users.Count - 1);
+                result.RemoveAt(result.Count - 1);
 
             bool hasNextPage;
             bool hasPreviousPage;
 
             if (request.IsQueryPreviousPage)
             {
-                users.Reverse();
+                result.Reverse();
                 hasNextPage = true;
                 hasPreviousPage = hasMore;
             }
@@ -114,7 +110,7 @@ namespace Pagination.API.Controllers
 
             return Ok(new CursorPaginationResponse<User>
             {
-                Data = users,
+                Data = result,
                 TotalCount = totalCount, // optional
                 NextCursor = nextCursor,
                 PreviousCursor = previousCursor,

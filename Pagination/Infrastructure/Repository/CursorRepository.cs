@@ -1,42 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Pagination.Application.DTO;
 using Pagination.Application.Common;
+using Pagination.Application.Configuration;
+using Pagination.Application.DTO;
+using Pagination.Application.Extensions.Repository;
 using Pagination.Application.Interface.Repository;
+using Pagination.Application.Queries;
 using Pagination.Domain.Model;
 using Pagination.Infrastructure.Caching;
 
 namespace Pagination.Infrastructure.Repository
 {
-    public class CursorRepository : ICursorRepository
+    public class CursorRepository(UserDbContext _userDbContext, IOptions<AppSettings> _appSettings, IOptions<CacheSettings> _cacheSettings) 
+        : ICursorRepository
     {
-        private readonly UserDbContext _userDbContext;
-        private readonly bool _isUseCache;
-        private readonly bool _isUseNoTracking;
-        private readonly bool _isUseSplitQuery;
-
-
-        public CursorRepository(UserDbContext userDbContext, IOptions<AppSettings> appSettings)
+        public async Task<(IQueryable<User>, int)> GetAsync(CursorPaginationRequest request, UserIncludeOptions includeOptions)
         {
-            _userDbContext = userDbContext;
-            _isUseCache = appSettings.Value.IsUseCache;
-            _isUseNoTracking = appSettings.Value.IsUseNoTracking;
-            _isUseSplitQuery = appSettings.Value.IsUseSplitQuery;
-        }
-
-        public async Task<(List<User>, int)> GetAsync(CursorPaginationRequest request)
-        {
-            IQueryable<User> queryable = _userDbContext.Users;
-
-            if (_isUseNoTracking)
-                queryable = queryable.AsNoTracking();
+            IQueryable<User> queryable = _userDbContext.Users.AsNoTracking();
 
             int totalCount = 0;
 
-            if (_isUseCache)
+            if (_appSettings.Value.IsUseCache)
             {
-                totalCount = await AsyncCache<int>.GetOrUpdateAsync(
-                    CacheKeyAndTimes.UserCount.ToString(), TimeSpan.FromMinutes((int)CacheKeyAndTimes.UserCount), () => queryable.CountAsync());
+                var userCountCacheSettings = _cacheSettings.Value.Items[CacheKeys.UserCount];
+
+                totalCount = await AsyncCache<int>.GetOrUpdateAsync(userCountCacheSettings.Key, 
+                    TimeSpan.FromMinutes(userCountCacheSettings.ExpirationMinutes), () => queryable.CountAsync());
             }
             else
             {
@@ -52,24 +41,14 @@ namespace Pagination.Infrastructure.Repository
                 queryable = queryable.Where(u => u.Id > request.Cursor).OrderBy(u => u.Id);
             }
 
-            if (_isUseSplitQuery)
+            if (includeOptions == UserIncludeOptions.All)
             {
                 queryable = queryable.AsSplitQuery();
             }
 
-            queryable = queryable
-                .Include(u => u.Roles)
-                .Include(u => u.Address)
-                .Include(u => u.BankAccount)
-                    .ThenInclude(ba => ba.Transactions)
-                .Include(u => u.CreditCards)
-                    .ThenInclude(cc => cc.Statements)
-                .Include(u => u.Loans)
-                    .ThenInclude(l => l.Repayments)
-                .Include(u => u.SupportTickets)
-                    .ThenInclude(st => st.Comments);
+            queryable = queryable.ApplyIncludes(includeOptions);
 
-            return (await queryable.Take(request.PageSize + 1).ToListAsync(), totalCount);
+            return (queryable.Take(request.PageSize + 1), totalCount);
         }
     }
 }

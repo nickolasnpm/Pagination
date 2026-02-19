@@ -1,20 +1,21 @@
 ﻿using Pagination.Application.DTO;
+using Pagination.Application.Queries;
 using Pagination.Domain.Model;
 
 namespace Pagination.Application.Interface.Repository
 {
-    public interface IBaseRepository<TEntity, TRequest> where TEntity : class where TRequest : class
+    public interface IBaseRepository<TEntity, TRequest, TIncludeOptions> where TEntity : class where TRequest : class where TIncludeOptions : class
     {
-        Task<(List<TEntity> Items, int TotalCount)> GetAsync(TRequest request);
+        Task<(IQueryable<TEntity> Items, int TotalCount)> GetAsync(TRequest request, TIncludeOptions includeOptions);
     }
 
     // deviate from clean architecture folder structure, should be in separate file
-    public interface ICursorRepository : IBaseRepository<User, CursorPaginationRequest>
+    public interface ICursorRepository : IBaseRepository<User, CursorPaginationRequest,  UserIncludeOptions>
     {
 
     }
 
-    public interface IOffsetRepository : IBaseRepository<User, OffsetPaginationRequest>
+    public interface IOffsetRepository : IBaseRepository<User, OffsetPaginationRequest, UserIncludeOptions>
     {
 
     }
