@@ -17,7 +17,7 @@ namespace Pagination.API.Controllers
         : ControllerBase
     {
         [HttpGet("getusers")]
-        public async Task<IActionResult> DefaultPaginationAsync ([FromQuery] DefaultPaginationRequest request)
+        public async Task<IActionResult> GetPaginatedUsers ([FromQuery] PaginationRequestDTO request)
         {
             try
             {
@@ -44,12 +44,13 @@ namespace Pagination.API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured. PaginationType: {PaginationType}", request.PaginationType);
+                _logger.LogError($"Error occured while processing pagination type {request.PaginationType}: ", ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while processing your request: {ex.Message}");
             }
 
         }
 
+        // Just place it here for demo purpose. Should be inside service class
         private async Task<IActionResult> OffsetPaginationAsync(OffsetPaginationRequest request)
         {
             if (request.Page < 1)

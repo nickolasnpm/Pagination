@@ -4,7 +4,15 @@ using Pagination.Domain.Entity;
 
 namespace Pagination.Application.Interface.Repository
 {
-    public interface IBaseRepository<TEntity, TRequest, TIncludeOptions> where TEntity : class where TRequest : class where TIncludeOptions : class
+    public interface IBaseRepository<TEntity> where TEntity : class
+    {
+        IQueryable<TEntity> GetAll();
+    }
+
+    public interface IBaseRepository<TEntity, TRequest, TIncludeOptions> : IBaseRepository<TEntity>
+        where TEntity : class
+        where TRequest : class
+        where TIncludeOptions : class
     {
         Task<(IQueryable<TEntity> Items, int TotalCount)> GetAsync(TRequest request, TIncludeOptions includeOptions);
     }
@@ -18,6 +26,11 @@ namespace Pagination.Application.Interface.Repository
     public interface IOffsetRepository : IBaseRepository<User, OffsetPaginationRequest, UserIncludeOptions>
     {
 
+    }
+
+    public interface IUserODataRepository : IBaseRepository<User> 
+    {
+        
     }
 }
 

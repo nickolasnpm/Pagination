@@ -2,7 +2,7 @@
 
 namespace Pagination.Application.DTO
 {
-    public class DefaultPaginationRequest
+    public class PaginationRequestDTO
     {
         public PaginationType PaginationType { get; set; }
         

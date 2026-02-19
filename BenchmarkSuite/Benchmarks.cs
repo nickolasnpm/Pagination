@@ -134,13 +134,13 @@ namespace BenchmarkSuite
 
         #region Helper Methods
 
-        private async Task<IActionResult> ExecuteSingleRequest(DefaultPaginationRequest request)
+        private async Task<IActionResult> ExecuteSingleRequest(PaginationRequestDTO request)
         {
             var controller = new UserController(_offsetRepo, _cursorRepo, _logger);
-            return await controller.DefaultPaginationAsync(request);
+            return await controller.GetPaginatedUsers(request);
         }
 
-        private async Task<object> ExecuteConcurrentRequests(Func<int, DefaultPaginationRequest> requestFactory)
+        private async Task<object> ExecuteConcurrentRequests(Func<int, PaginationRequestDTO> requestFactory)
         {
             var tasks = new List<Task<RequestResult>>();
             var stopwatch = Stopwatch.StartNew();
@@ -162,7 +162,7 @@ namespace BenchmarkSuite
                         var controller = new UserController(offsetRepo, cursorRepo, logger);
 
                         var request = requestFactory(userIndex);
-                        var result = await controller.DefaultPaginationAsync(request);
+                        var result = await controller.GetPaginatedUsers(request);
 
                         userStopwatch.Stop();
                         return new RequestResult
@@ -247,7 +247,7 @@ namespace BenchmarkSuite
         [Benchmark(Description = "Offset: First Page")]
         public async Task<IActionResult> Offset_RetrieveFirstPage()
         {
-            var request = new DefaultPaginationRequest
+            var request = new PaginationRequestDTO
             {
                 PaginationType = (int)PaginationType.Offset,
                 offsetPagination = new OffsetPaginationRequest
@@ -262,7 +262,7 @@ namespace BenchmarkSuite
         [Benchmark(Description = "Offset: Middle Page")]
         public async Task<IActionResult> Offset_RetrieveRandomPage()
         {
-            var request = new DefaultPaginationRequest
+            var request = new PaginationRequestDTO
             {
                 PaginationType = (int)PaginationType.Offset,
                 offsetPagination = new OffsetPaginationRequest
@@ -277,7 +277,7 @@ namespace BenchmarkSuite
         [Benchmark(Description = "Offset: Last Page")]
         public async Task<IActionResult> Offset_RetrieveLastPage()
         {
-            var request = new DefaultPaginationRequest
+            var request = new PaginationRequestDTO
             {
                 PaginationType = (int)PaginationType.Offset,
                 offsetPagination = new OffsetPaginationRequest
@@ -296,7 +296,7 @@ namespace BenchmarkSuite
         [Benchmark(Description = "Cursor: First Page")]
         public async Task<IActionResult> Cursor_RetrieveFirstPage()
         {
-            var request = new DefaultPaginationRequest
+            var request = new PaginationRequestDTO
             {
                 PaginationType = (int)PaginationType.Cursor,
                 cursorPagination = new CursorPaginationRequest
@@ -311,7 +311,7 @@ namespace BenchmarkSuite
         [Benchmark(Description = "Cursor: Middle Page")]
         public async Task<IActionResult> Cursor_RetrieveRandomPage()
         {
-            var request = new DefaultPaginationRequest
+            var request = new PaginationRequestDTO
             {
                 PaginationType = (int)PaginationType.Cursor,
                 cursorPagination = new CursorPaginationRequest
@@ -326,7 +326,7 @@ namespace BenchmarkSuite
         [Benchmark(Description = "Cursor: Last Page")]
         public async Task<IActionResult> Cursor_RetrieveLastPage()
         {
-            var request = new DefaultPaginationRequest
+            var request = new PaginationRequestDTO
             {
                 PaginationType = (int)PaginationType.Cursor,
                 cursorPagination = new CursorPaginationRequest
@@ -360,7 +360,7 @@ namespace BenchmarkSuite
                 else
                     page = _random.Next(Math.Max(1, _totalPages - 10), _totalPages + 1);
 
-                return new DefaultPaginationRequest
+                return new PaginationRequestDTO
                 {
                     PaginationType = (int)PaginationType.Offset,
                     offsetPagination = new OffsetPaginationRequest
@@ -390,7 +390,7 @@ namespace BenchmarkSuite
                 else
                     cursor = _random.Next(Math.Max(0, _totalRecords - 500), _totalRecords - PageSize);
 
-                return new DefaultPaginationRequest
+                return new PaginationRequestDTO
                 {
                     PaginationType = (int)PaginationType.Cursor,
                     cursorPagination = new CursorPaginationRequest
@@ -411,7 +411,7 @@ namespace BenchmarkSuite
 
                 if (useOffset)
                 {
-                    return new DefaultPaginationRequest
+                    return new PaginationRequestDTO
                     {
                         PaginationType = (int)PaginationType.Offset,
                         offsetPagination = new OffsetPaginationRequest
@@ -423,7 +423,7 @@ namespace BenchmarkSuite
                 }
                 else
                 {
-                    return new DefaultPaginationRequest
+                    return new PaginationRequestDTO
                     {
                         PaginationType = (int)PaginationType.Cursor,
                         cursorPagination = new CursorPaginationRequest

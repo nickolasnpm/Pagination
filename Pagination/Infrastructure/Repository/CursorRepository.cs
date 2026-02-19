@@ -14,9 +14,14 @@ namespace Pagination.Infrastructure.Repository
     public class CursorRepository(UserDbContext _userDbContext, IOptions<AppSettings> _appSettings, IOptions<CacheSettings> _cacheSettings) 
         : ICursorRepository
     {
+        public IQueryable<User> GetAll()
+        {
+            return _userDbContext.Users.AsNoTracking();
+        }
+
         public async Task<(IQueryable<User>, int)> GetAsync(CursorPaginationRequest request, UserIncludeOptions includeOptions)
         {
-            IQueryable<User> queryable = _userDbContext.Users.AsNoTracking();
+            IQueryable<User> queryable = GetAll();
 
             int totalCount = 0;
 

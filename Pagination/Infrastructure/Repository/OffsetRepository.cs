@@ -15,9 +15,14 @@ namespace Pagination.Infrastructure.Repository
     public class OffsetRepository (UserDbContext _userDbContext, IOptions<AppSettings> _appSettings, IOptions<CacheSettings> _cacheSettings) 
         : IOffsetRepository
     {
+        public IQueryable<User> GetAll()
+        {
+            return _userDbContext.Users.AsNoTracking();
+        }
+
         public async Task<(IQueryable<User>, int)> GetAsync(OffsetPaginationRequest request, UserIncludeOptions includeOptions)
         {
-            IQueryable<User> queryable = _userDbContext.Users.AsNoTracking();
+            IQueryable<User> queryable = GetAll();
 
             var totalCount = 0;
 
